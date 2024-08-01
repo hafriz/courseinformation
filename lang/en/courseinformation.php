@@ -25,6 +25,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+$string['modulename'] = 'Course Information';
+$string['modulenameplural'] = 'Course Information';
 $string['course_credit'] = 'Course Credit';
 $string['course_summary'] = 'Course summary';
 $string['courseinformation:addinstance'] = 'Add Course Description modules in Courses';
