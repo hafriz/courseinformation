@@ -39,7 +39,7 @@ class mod_courseinformation_mod_form extends moodleform_mod {
      * Defines forms elements
      */
     public function definition() {
-        global $CFG;
+        global $CFG, $COURSE;
 
         $mform = $this->_form;
 
@@ -47,7 +47,8 @@ class mod_courseinformation_mod_form extends moodleform_mod {
         $mform->addElement('header', 'general', get_string('general', 'form'));
 
         // Adding the standard "name" field.
-        $mform->addElement('text', 'name', get_string('courseinformationname', 'mod_courseinformation'), array('size' => '64'));
+        $mform->addElement('text', 'name', get_string('courseinformationname', 'mod_courseinformation'), array('size' => '64', 'disabled' => 'disabled'));
+        $mform->setDefault('name', 'Course Information');
 
         if (!empty($CFG->formatstringstriptags)) {
             $mform->setType('name', PARAM_TEXT);
@@ -57,19 +58,54 @@ class mod_courseinformation_mod_form extends moodleform_mod {
 
         $mform->addRule('name', null, 'required', null, 'client');
         $mform->addRule('name', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
-        $mform->addHelpButton('name', 'courseinformationname', 'mod_courseinformation');
 
         // Adding the standard "intro" and "introformat" fields.
+        /*
         if ($CFG->branch >= 29) {
             $this->standard_intro_elements();
         } else {
             $this->add_intro_editor();
         }
+        */
+        $mform->addElement('text','coursename', get_string('coursename','mod_courseinformation', array('size' => '64', 'disabled' => 'disabled')));
+        $mform->setDefault('coursename', $COURSE->fullname);
+        if (!empty($CFG->formatstringstriptags)) {
+            $mform->setType('coursename', PARAM_TEXT);
+        } else {
+            $mform->setType('coursename', PARAM_CLEANHTML);
+        }
 
+        $mform->addRule('coursename', null, 'required', null, 'client');
+        $mform->addRule('coursename', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
+
+        $mform->addElement('text','courseshortname', get_string('courseshortname','mod_courseinformation', array('size' => '64', 'disabled' => 'disabled')));
+        $mform->setDefault('courseshortname', $COURSE->shortname);
+        if (!empty($CFG->formatstringstriptags)) {
+            $mform->setType('courseshortname', PARAM_TEXT);
+        } else {
+            $mform->setType('courseshortname', PARAM_CLEANHTML);
+        }
+
+        $mform->addRule('courseshortname', null, 'required', null, 'client');
+        $mform->addRule('courseshortname', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
         // Adding the rest of mod_courseinformation settings, spreading all them into this fieldset
         // ... or adding more fieldsets ('header' elements) if needed for better logic.
         $mform->addElement('static', 'label1', 'courseinformationsettings', get_string('courseinformationsettings', 'mod_courseinformation'));
+
+        //course format information with blended learning information
         $mform->addElement('header', 'courseinformationfieldset', get_string('courseinformationfieldset', 'mod_courseinformation'));
+
+        $optionFormat = array(
+            'blended-sokongan' => get_string('blended-sokongan','courseinformation'),
+            'blended-gantian' => get_string('blended-gantian','courseinformation')
+        );
+
+        $mform->addElement('select', 'courseformat'. get_string('courseformat','courseinformation'), $optionFormat);
+
+        $mform->addElement('text','material_hour', get_string('material_hour', 'courseinformation'),array('size' => '4'));
+        $mform->setType('material_hour', PARAM_RAW);
+        $mform->addRule('material_hour', null, 'numeric', null, 'client');
+        $mform->hideIf('material_hour','courseformat','eq','blended-sokongan');
 
         // Add standard elements.
         $this->standard_coursemodule_elements();
